@@ -21,6 +21,12 @@ Sub Main()
     form.FormBorderStyle = WinForms.FormBorderStyle.FixedDialog
     form.MaximizeBox = False
     form.Size = New Drawing.Size(1000, 800)
+    form.AutoSize = True
+    form.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
+
+    Dim defaultFont As New Drawing.Font("Segoe UI", 9)
+    form.Font = defaultFont
+    form.BackColor = Drawing.Color.WhiteSmoke
 
     ' Создание TabControl для вкладок
     Dim tabControl As New WinForms.TabControl()
@@ -29,22 +35,41 @@ Sub Main()
 
     ' Создание вкладки для основного скрипта
     Dim tabMain As New WinForms.TabPage("Основные операции")
-    tabControl.TabPages.Add(tabMain)
-
-    ' Создание вкладки для дополнительных операций
     Dim tabAdditional As New WinForms.TabPage("Доп. операции")
+    tabMain.BackColor = form.BackColor
+    tabAdditional.BackColor = form.BackColor
+    tabControl.TabPages.Add(tabMain)
     tabControl.TabPages.Add(tabAdditional)
+
+    ' Основной макет для первой вкладки
+    Dim mainTable As New WinForms.TableLayoutPanel()
+    mainTable.Dock = WinForms.DockStyle.Fill
+    mainTable.ColumnCount = 2
+    mainTable.ColumnStyles.Add(New WinForms.ColumnStyle(WinForms.SizeType.Percent, 50))
+    mainTable.ColumnStyles.Add(New WinForms.ColumnStyle(WinForms.SizeType.Percent, 50))
+    mainTable.RowStyles.Add(New WinForms.RowStyle())
+    mainTable.RowStyles.Add(New WinForms.RowStyle())
+    mainTable.RowStyles.Add(New WinForms.RowStyle())
+    mainTable.RowStyles.Add(New WinForms.RowStyle())
+    tabMain.Controls.Add(mainTable)
+
+    ' Вертикальный макет для второй вкладки
+    Dim additionalFlow As New WinForms.FlowLayoutPanel()
+    additionalFlow.Dock = WinForms.DockStyle.Fill
+    additionalFlow.FlowDirection = WinForms.FlowDirection.TopDown
+    additionalFlow.WrapContents = False
+    additionalFlow.AutoScroll = True
+    tabAdditional.Controls.Add(additionalFlow)
 
     ' Создание GroupBox для отображения пути в основной вкладке
     Dim gbPath As New WinForms.GroupBox()
     gbPath.Text = "Проверяется папка:"
-    gbPath.Top = 10
-    gbPath.Left = 10
-    gbPath.Width = 960
-    gbPath.Height = 100
     gbPath.AutoSize = True
     gbPath.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabMain.Controls.Add(gbPath)
+    gbPath.Dock = WinForms.DockStyle.Fill
+    gbPath.Margin = New WinForms.Padding(5)
+    mainTable.Controls.Add(gbPath, 0, 0)
+    mainTable.SetColumnSpan(gbPath, 2)
 
     ' Создание RichTextBox для отображения пути
     Dim rtbPath As New WinForms.RichTextBox()
@@ -65,6 +90,7 @@ Sub Main()
     btnBrowse.Left = 870
     btnBrowse.Width = 80
     btnBrowse.Height = 24
+    StyleButton(btnBrowse)
     gbPath.Controls.Add(btnBrowse)
 
     ' Создание кнопки для возврата изначального пути
@@ -74,6 +100,7 @@ Sub Main()
     btnAuto.Left = 870
     btnAuto.Width = 80
     btnAuto.Height = 24
+    StyleButton(btnAuto)
     gbPath.Controls.Add(btnAuto)
 
     ' Создание метки для статуса папки
@@ -91,12 +118,11 @@ Sub Main()
     ' Создание GroupBox для выбора опций в основной вкладке
     Dim gbOptions As New WinForms.GroupBox()
     gbOptions.Text = "Выбор опций"
-    gbOptions.Top = gbPath.Bottom + 10
-    gbOptions.Left = 10
-    gbOptions.Width = 460
     gbOptions.AutoSize = True
     gbOptions.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabMain.Controls.Add(gbOptions)
+    gbOptions.Dock = WinForms.DockStyle.Fill
+    gbOptions.Margin = New WinForms.Padding(5)
+    mainTable.Controls.Add(gbOptions, 0, 1)
 
     ' Создание панели для кнопок выбора/снятия
     Dim panelSelectButtons As New WinForms.FlowLayoutPanel()
@@ -111,11 +137,13 @@ Sub Main()
     Dim btnSelectAll As New WinForms.Button()
     btnSelectAll.Text = "Выбрать всё"
     btnSelectAll.AutoSize = True
+    StyleButton(btnSelectAll)
 
     ' Создание кнопки для снятия выделения со всех чекбоксов
     Dim btnDeselectAll As New WinForms.Button()
     btnDeselectAll.Text = "Снять выделение"
     btnDeselectAll.AutoSize = True
+    StyleButton(btnDeselectAll)
 
     ' Добавление кнопок выбора/снятия в панель
     panelSelectButtons.Controls.Add(btnSelectAll)
@@ -162,12 +190,11 @@ Sub Main()
     ' Создание GroupBox для пользовательских папок в основной вкладке
     Dim gbCustomFolders As New WinForms.GroupBox()
     gbCustomFolders.Text = "Пользовательские папки"
-    gbCustomFolders.Top = gbPath.Bottom + 10
-    gbCustomFolders.Left = gbOptions.Right + 10
-    gbCustomFolders.Width = 460
     gbCustomFolders.AutoSize = True
     gbCustomFolders.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabMain.Controls.Add(gbCustomFolders)
+    gbCustomFolders.Dock = WinForms.DockStyle.Fill
+    gbCustomFolders.Margin = New WinForms.Padding(5)
+    mainTable.Controls.Add(gbCustomFolders, 1, 1)
 
     ' Создание панели для пользовательских папок
     Dim panelCustomFolders As New WinForms.FlowLayoutPanel()
@@ -203,33 +230,37 @@ Sub Main()
 
     ' Создание панели для кнопок
     Dim panelButtons As New WinForms.FlowLayoutPanel()
-    panelButtons.Top = gbCustomFolders.Bottom + 10
-    panelButtons.Left = 10
-    panelButtons.Width = 960
     panelButtons.AutoSize = True
     panelButtons.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabMain.Controls.Add(panelButtons)
+    panelButtons.Dock = WinForms.DockStyle.Fill
+    panelButtons.Margin = New WinForms.Padding(5)
+    mainTable.Controls.Add(panelButtons, 0, 2)
+    mainTable.SetColumnSpan(panelButtons, 2)
 
     ' Создание кнопки для отправки формы
     Dim btnSubmit As New WinForms.Button()
     btnSubmit.Text = "Создать"
     btnSubmit.AutoSize = True
+    StyleButton(btnSubmit)
 
     ' Создание кнопки для закрытия формы
     Dim btnClose As New WinForms.Button()
     btnClose.Text = "Закрыть"
     btnClose.AutoSize = True
+    StyleButton(btnClose)
 
     ' Создание кнопки для открытия папки
     Dim btnOpenFolder As New WinForms.Button()
     btnOpenFolder.Text = "Открыть папку"
     btnOpenFolder.AutoSize = True
+    StyleButton(btnOpenFolder)
 
     ' Создание кнопки для удаления папки
     Dim btnDeleteAll As New WinForms.Button()
     btnDeleteAll.Text = "Стереть всё"
     btnDeleteAll.AutoSize = True
     btnDeleteAll.Anchor = WinForms.AnchorStyles.Right
+    StyleButton(btnDeleteAll)
 
     ' Добавление кнопок в панель
     panelButtons.Controls.Add(btnSubmit)
@@ -239,23 +270,22 @@ Sub Main()
 
     ' Создание основной панели для списков
     Dim panelLists As New WinForms.Panel()
-    panelLists.Top = panelButtons.Bottom + 10
-    panelLists.Left = 10
-    panelLists.Width = 960
     panelLists.AutoSize = True
     panelLists.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabMain.Controls.Add(panelLists)
+    panelLists.Dock = WinForms.DockStyle.Fill
+    panelLists.Margin = New WinForms.Padding(5)
+    mainTable.Controls.Add(panelLists, 0, 3)
+    mainTable.SetColumnSpan(panelLists, 2)
 
     ' Создание GroupBox для существующих папок
     Dim gbExistingDirs As New WinForms.GroupBox()
     gbExistingDirs.Text = "Существующие папки"
-    gbExistingDirs.Top = 10
-    gbExistingDirs.Left = 10
-    gbExistingDirs.Width = 460
-    gbExistingDirs.Height = 280
     gbExistingDirs.AutoSize = True
     gbExistingDirs.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
     gbExistingDirs.ForeColor = Drawing.Color.Black
+    gbExistingDirs.Dock = WinForms.DockStyle.Left
+    gbExistingDirs.Width = 460
+    gbExistingDirs.Margin = New WinForms.Padding(5)
     panelLists.Controls.Add(gbExistingDirs)
 
     ' Создание ListView для отображения существующих папок
@@ -278,13 +308,12 @@ Sub Main()
     ' Создание GroupBox для несвязанных папок
     Dim gbUnrelatedDirs As New WinForms.GroupBox()
     gbUnrelatedDirs.Text = "Несвязанные папки"
-    gbUnrelatedDirs.Top = 10
-    gbUnrelatedDirs.Left = 490
-    gbUnrelatedDirs.Width = 460
-    gbUnrelatedDirs.Height = 280
     gbUnrelatedDirs.AutoSize = True
     gbUnrelatedDirs.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
     gbUnrelatedDirs.ForeColor = Drawing.Color.Black
+    gbUnrelatedDirs.Dock = WinForms.DockStyle.Fill
+    gbUnrelatedDirs.Width = 460
+    gbUnrelatedDirs.Margin = New WinForms.Padding(5)
     panelLists.Controls.Add(gbUnrelatedDirs)
 
     ' Создание ListView для отображения несвязанных папок
@@ -417,13 +446,11 @@ Sub Main()
     ' Создание GroupBox для операций с PDF
     Dim gbPDFOperations As New WinForms.GroupBox()
     gbPDFOperations.Text = "Операции с PDF"
-    gbPDFOperations.Top = 10
-    gbPDFOperations.Left = 10
-    gbPDFOperations.Width = 960
-    gbPDFOperations.Height = 400
     gbPDFOperations.AutoSize = True
     gbPDFOperations.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabAdditional.Controls.Add(gbPDFOperations)
+    gbPDFOperations.Dock = WinForms.DockStyle.Top
+    gbPDFOperations.Margin = New WinForms.Padding(5)
+    additionalFlow.Controls.Add(gbPDFOperations)
 
     ' Создание кнопки для сканирования и перемещения PDF файлов
     Dim btnScanPDF As New WinForms.Button()
@@ -432,6 +459,7 @@ Sub Main()
     btnScanPDF.Left = 20
     btnScanPDF.Width = 200
     btnScanPDF.Height = 30
+    StyleButton(btnScanPDF)
     gbPDFOperations.Controls.Add(btnScanPDF)
 
     Dim btnMovePDF As New WinForms.Button()
@@ -440,6 +468,7 @@ Sub Main()
     btnMovePDF.Left = 240
     btnMovePDF.Width = 200
     btnMovePDF.Height = 30
+    StyleButton(btnMovePDF)
     gbPDFOperations.Controls.Add(btnMovePDF)
 
     ' Создание метки для отображения статистики
@@ -476,13 +505,11 @@ Sub Main()
     ' Создание GroupBox для проверки наполнения папок
     Dim gbFolderCheck As New WinForms.GroupBox()
     gbFolderCheck.Text = "Проверка наполнения папок"
-    gbFolderCheck.Top = gbPDFOperations.Bottom + 10
-    gbFolderCheck.Left = 10
-    gbFolderCheck.Width = 960
-    gbFolderCheck.Height = 200
     gbFolderCheck.AutoSize = True
     gbFolderCheck.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-    tabAdditional.Controls.Add(gbFolderCheck)
+    gbFolderCheck.Dock = WinForms.DockStyle.Top
+    gbFolderCheck.Margin = New WinForms.Padding(5)
+    additionalFlow.Controls.Add(gbFolderCheck)
 
     ' Создание кнопки для проверки папок
     Dim btnCheckFolders As New WinForms.Button()
@@ -491,6 +518,7 @@ Sub Main()
     btnCheckFolders.Left = 20
     btnCheckFolders.Width = 200
     btnCheckFolders.Height = 30
+    StyleButton(btnCheckFolders)
     gbFolderCheck.Controls.Add(btnCheckFolders)
 
     ' Создание метки для результата проверки
@@ -751,7 +779,6 @@ Sub HandleButtonClick(sender As Object, cb00 As WinForms.CheckBox, cb02 As WinFo
 
     ' Обновляем списки после создания папок
     UpdateDirectoryLists(baseDirectory, lvExistingDirs, lvUnrelatedDirs, cb00, cb02, cb06, cb08_1, cb08_2)
-    form.Height = gbPath.Bottom + gbOptions.Height + gbCustomFolders.Height + panelButtons.Height + panelLists.Height + 80
 
     ' Обновление состояния кнопок "Открыть папку" и "Стереть всё"
     If IO.Directory.Exists(IO.Path.Combine(baseDirectory, "- Заявки")) Then
@@ -824,3 +851,12 @@ Function CheckEmptyFolders(currentDateDir As String) As List(Of String)
     Next
     Return emptyDirs
 End Function
+
+' Применение упрощённого стиля к кнопкам
+Sub StyleButton(btn As WinForms.Button)
+    btn.FlatStyle = WinForms.FlatStyle.Flat
+    btn.FlatAppearance.BorderSize = 0
+    btn.BackColor = ColorTranslator.FromHtml("#007bff")
+    btn.ForeColor = Drawing.Color.White
+    btn.Padding = New WinForms.Padding(6, 4, 6, 4)
+End Sub
