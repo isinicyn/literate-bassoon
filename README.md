@@ -13,6 +13,7 @@ The primary goal of this script is to streamline the organization of project del
 ## Features
 
 The script presents a user interface with two main tabs.
+The redesigned layout uses split containers and a shared style for all group boxes, providing a cleaner and more flexible experience.
 
 ### 1. Основные операции (Main Operations) Tab
 
